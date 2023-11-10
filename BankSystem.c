@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 struct BankAccount
 {
@@ -15,6 +16,7 @@ void createAccount(struct BankAccount *account)
     if (filePointer != NULL)
     {
         fprintf(filePointer, "%d %s %.2f\n", account->accountNumber, account->accountholderName, account->balance);
+        printf("Your Account Number is  : %d\n", account->accountNumber);
         fclose(filePointer);
         printf("Account created successfully!\n");
     }
@@ -153,63 +155,76 @@ void withdraw(int accountNumber, float withdrawAmount)
 
 int main(void)
 {
-    int choice;
+    int choice = 0;
     int accountNumber;
 
+    int initialAccountNumber;
+
     printf("Welcome to the Bank App!\n");
-    printf("--Press 1 to create a new account.\n--Press 2 to see account details.\n--Press 3 to deposit money to your account.\n--Press 4 to withdraw money from your account.\n");
-
-    scanf("%d", &choice);
-
-    switch (choice)
+    while (choice != 5)
     {
-    case 1:
-    {
-        char accountHolderName[100];
-        struct BankAccount account;
 
-        printf("Enter Name: ");
-        scanf("%s", accountHolderName);
-        printf("Enter Account Number: ");
-        scanf("%d", &accountNumber);
+        printf("--Press 1 to create a new account.\n--Press 2 to see account details.\n--Press 3 to deposit money to your account.\n--Press 4 to withdraw money from your account.\n--Press 5 to exit\n");
 
-        strcpy(account.accountholderName, accountHolderName);
-        account.accountNumber = accountNumber;
-        account.balance = 0;
-        createAccount(&account);
-        break;
-    }
+        scanf("%d", &choice);
 
-    case 2:
-        printf("Enter Account Number: ");
-        scanf("%d", &accountNumber);
-        displayAccount(accountNumber);
-        break;
+        if (choice == 1)
+        {
+            FILE *lastAccountNumberPointer = fopen("LatestAccountNumber.txt", "r");
+            fscanf(lastAccountNumberPointer, "%d", &initialAccountNumber);
+            fclose(lastAccountNumberPointer);
+            char accountHolderName[100];
+            struct BankAccount account;
+            printf("Enter Name: ");
+            scanf("%s", accountHolderName);
+            accountNumber = initialAccountNumber;
+            initialAccountNumber++;
+            strcpy(account.accountholderName, accountHolderName);
+            account.accountNumber = accountNumber;
+            account.balance = 0;
+            createAccount(&account);
+        }
 
-    case 3:
-    {
-        float depositAmount;
-        printf("Enter Account Number: ");
-        scanf("%d", &accountNumber);
-        printf("Enter Amount to be Deposited: ");
-        scanf("%f", &depositAmount);
-        deposit(accountNumber, depositAmount);
-        break;
-    }
+        if (choice == 2)
+        {
+            printf("Enter Account Number: ");
+            scanf("%d", &accountNumber);
+            displayAccount(accountNumber);
+        }
 
-    case 4:
-    {
-        float withdrawAmount;
-        printf("Enter Account Number: ");
-        scanf("%d", &accountNumber);
-        printf("Enter Amount to be Withdrawn: ");
-        scanf("%f", &withdrawAmount);
-        withdraw(accountNumber, withdrawAmount);
-        break;
-    }
+        if (choice == 3)
+        {
+            float depositAmount;
+            printf("Enter Account Number: ");
+            scanf("%d", &accountNumber);
+            printf("Enter Amount to be Deposited: ");
+            scanf("%f", &depositAmount);
+            deposit(accountNumber, depositAmount);
+        }
 
-    default:
-        printf("Invalid choice.\n");
+        if (choice == 4)
+        {
+            float withdrawAmount;
+            printf("Enter Account Number: ");
+            scanf("%d", &accountNumber);
+            printf("Enter Amount to be Withdrawn: ");
+            scanf("%f", &withdrawAmount);
+            withdraw(accountNumber, withdrawAmount);
+        }
+
+        if (choice == 5)
+            break;
+
+        if (choice < 1 || choice > 5)
+        {
+            printf("Invalid Choice!\n");
+        }
+
+        FILE *tempPointer = fopen("Temp.txt", "w");
+        fprintf(tempPointer, "%d", initialAccountNumber);
+        fclose(tempPointer);
+        remove("LatestAccountNumber.txt");
+        rename("Temp.txt", "LatestAccountNumber.txt");
     }
 
     return 0;
