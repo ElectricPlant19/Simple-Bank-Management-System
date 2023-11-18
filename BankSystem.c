@@ -15,52 +15,55 @@ void createAccount(struct BankAccount *account);
 void displayAccount(int accountNumber);
 void deposit(int accountNumber, float depositAmount);
 void withdraw(int accountNumber, float withdrawAmount);
-
+int getAccountNumber();
+void transfer(int sender, int receiver, float transferAmount);
 
 int main(void)
 {
-    int choice = 0;
+    int choice;
     int accountNumber;
 
     int initialAccountNumber;
 
     printf("Welcome to the Bank App!\n");
-    while (choice != 5)
+    while (choice != 6)
     {
 
-        printf("--Press 1 to create a new account.\n--Press 2 to see account details.\n--Press 3 to deposit money to your account.\n--Press 4 to withdraw money from your account.\n--Press 5 to exit\n");
+        printf("--Press 1 to create a new account.\n--Press 2 to see account details.\n--Press 3 to deposit money to your account.\n--Press 4 to withdraw money from your account.\n--Press 5 for Transfer\n--Press 6 to exit\n");
 
         scanf("%d", &choice);
 
         if (choice == 1)
         {
+            char accountHolderName[100];
+            struct BankAccount account;
+
             FILE *lastAccountNumberPointer = fopen("LatestAccountNumber.txt", "r");
             fscanf(lastAccountNumberPointer, "%d", &initialAccountNumber);
             fclose(lastAccountNumberPointer);
-            char accountHolderName[100];
-            struct BankAccount account;
+
             printf("Enter Name: ");
             scanf("%s", accountHolderName);
+
             accountNumber = initialAccountNumber;
             initialAccountNumber++;
             strcpy(account.accountholderName, accountHolderName);
             account.accountNumber = accountNumber;
             account.balance = 0;
+
             createAccount(&account);
         }
 
         if (choice == 2)
         {
-            printf("Enter Account Number: ");
-            scanf("%d", &accountNumber);
+            accountNumber = getAccountNumber();
             displayAccount(accountNumber);
         }
 
         if (choice == 3)
         {
             float depositAmount;
-            printf("Enter Account Number: ");
-            scanf("%d", &accountNumber);
+            accountNumber = getAccountNumber();
             printf("Enter Amount to be Deposited: ");
             scanf("%f", &depositAmount);
             deposit(accountNumber, depositAmount);
@@ -69,8 +72,7 @@ int main(void)
         if (choice == 4)
         {
             float withdrawAmount;
-            printf("Enter Account Number: ");
-            scanf("%d", &accountNumber);
+            accountNumber = getAccountNumber();
             printf("Enter Amount to be Withdrawn: ");
             scanf("%f", &withdrawAmount);
             withdraw(accountNumber, withdrawAmount);
@@ -78,11 +80,28 @@ int main(void)
 
         if (choice == 5)
         {
+            int senderAccNo, recevierAccNo;
+            float amount;
+
+            printf("Enter Sender Account : ");
+            scanf("%d", &senderAccNo);
+
+            printf("Enter Receiver Account : ");
+            scanf("%d", &recevierAccNo);
+
+            printf("Enter Transfer amount : ");
+            scanf("%f", &amount);
+
+            transfer(senderAccNo, recevierAccNo, amount);
+        }
+
+        if (choice == 6)
+        {
             printf("Exiting the Bank App. Thank you!\n");
             break;
         }
 
-        if (choice < 1 || choice > 5)
+        else
         {
             printf("Invalid Choice!\n");
         }
@@ -242,4 +261,21 @@ void withdraw(int accountNumber, float withdrawAmount)
     {
         printf("Error in withdrawing amount\n");
     }
+}
+
+int getAccountNumber()
+{
+    int accountNumber;
+
+    printf("Enter Account Number: ");
+    scanf("%d", &accountNumber);
+
+    return accountNumber;
+}
+
+void transfer(int sender, int reciever, float transferAmount)
+{
+    withdraw(sender, transferAmount);
+    deposit(reciever, transferAmount);
+    printf("Transfer Successful!\n\n");
 }
