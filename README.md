@@ -29,7 +29,7 @@ The **Simple Bank Management System** is a basic console application written in 
 1. **Compile the Code:**
    - Compile the C code using a C compiler (e.g., gcc).
    ```
-   gcc -o bank_management_system bank_management_system.c
+   gcc bank_management_system.c -o bank_management_system
    ```
 
 2. **Run the Program:**
